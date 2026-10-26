@@ -1,0 +1,718 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.25.2",
+    "script_metadata_hash": null
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "5d1879833e3d8338a7dad81b19a077d7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "9bacb84716f9e8b583dbbfb49984ce18",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"prediksi-harga-rumah-depok\">Prediksi Harga Rumah Depok</h1>\n<span class=\"paragraph\"><strong>Early Bird \u2013 Bengkel Koding Data Science (Ganjil 2026/2027)</strong>\nNama: Ferdian Nur Fariza | NIM: A11.2023.15074</span>\n<span class=\"paragraph\">Alur: <strong>EDA \u2192 Direct Modeling \u2192 Preprocessing &amp; Modeling \u2192 Feature Selection \u2192 Hyperparameter Tuning \u2192 Simpan Model</strong>\nTarget: <code>Harga</code> (regresi). Satuan harga di seluruh notebook: <strong>Juta Rupiah</strong>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "4fbf5337d96b3153eda36ff6fecb04ca",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"0-setup\">0. Setup</h2></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "e93977c6b53ddc54084a5ecd900886b9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "13b0e498bb14bd4287b5df29d34e99a7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "application/json": "[40200, 8]"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "231114422f920153a883ffa8dc68e44a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"1-eda\">1. EDA</h2></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "3746dfb9cf6bccb861e1355d73a3878a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"11-gambaran-umum\">1.1 Gambaran umum</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "0df5fc6a24778de4ccfa604475b02ca7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='BYtC-0' random-id='9332228e-8c01-f0f4-4e9a-4abeb1e8ea24'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;Harga&#92;&quot;:0,&#92;&quot;Kamar Tidur&#92;&quot;:9,&#92;&quot;Kamar Mandi&#92;&quot;:4403,&#92;&quot;Garasi&#92;&quot;:5189,&#92;&quot;Luas Tanah&#92;&quot;:7699,&#92;&quot;Luas Bangunan&#92;&quot;:15602,&#92;&quot;Kecamatan&#92;&quot;:0,&#92;&quot;Page&#92;&quot;:0}]&quot;' data-total-rows='1' data-total-columns='8' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='false' data-page-size='10' data-field-types='[[&quot;Harga&quot;,[&quot;integer&quot;,&quot;u32&quot;]],[&quot;Kamar Tidur&quot;,[&quot;integer&quot;,&quot;u32&quot;]],[&quot;Kamar Mandi&quot;,[&quot;integer&quot;,&quot;u32&quot;]],[&quot;Garasi&quot;,[&quot;integer&quot;,&quot;u32&quot;]],[&quot;Luas Tanah&quot;,[&quot;integer&quot;,&quot;u32&quot;]],[&quot;Luas Bangunan&quot;,[&quot;integer&quot;,&quot;u32&quot;]],[&quot;Kecamatan&quot;,[&quot;integer&quot;,&quot;u32&quot;]],[&quot;Page&quot;,[&quot;integer&quot;,&quot;u32&quot;]]]' data-show-filters='true' data-show-download='true' data-show-search='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-hidden-columns='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "9bf73b5ebf968ec64905618bb683e141",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"12-pola-isi-kolom\">1.2 Pola isi kolom</h3>\n<span class=\"paragraph\">Kolom fitur (<code>Kamar Tidur</code> s.d. <code>Luas Bangunan</code>) tampaknya tidak konsisten isinya. Cek dulu pola tiap baris:\n<code>n</code> = angka biasa, <code>T</code> = <code>LT\u2026</code>, <code>B</code> = <code>LB\u2026</code>, <code>_</code> = kosong.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "76906a7407de40f4cadae5cda030dcea",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "'DataFrame' object has no attribute 'apply'",
+          "traceback": null
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stderr",
+          "text": "<span class=\"codehilite\"><div class=\"highlight\"><pre><span></span><span class=\"gt\">Traceback (most recent call last):</span>\n  File <span class=\"nb\">&quot;C:\\Users\\euclid\\AppData\\Local\\Temp\\marimo_15328\\__marimo__cell_Kclp_.py&quot;</span>, line <span class=\"m\">21</span>, in <span class=\"n\">&lt;module&gt;</span>\n<span class=\"w\">    </span><span class=\"n\">pola</span> <span class=\"o\">=</span> <span class=\"n\">df_raw</span><span class=\"p\">[</span><span class=\"n\">KOLOM_FITUR</span><span class=\"p\">]</span><span class=\"o\">.</span><span class=\"n\">apply</span><span class=\"p\">(</span><span class=\"n\">simbol</span><span class=\"p\">)</span><span class=\"o\">.</span><span class=\"n\">agg</span><span class=\"p\">(</span><span class=\"s2\">&quot;&quot;</span><span class=\"o\">.</span><span class=\"n\">join</span><span class=\"p\">,</span> <span class=\"n\">axis</span><span class=\"o\">=</span><span class=\"mi\">1</span><span class=\"p\">)</span>\n<span class=\"w\">           </span><span class=\"pm\">^^^^^^^^^^^^^^^^^^^^^^^^^</span>\n  File <span class=\"nb\">&quot;C:\\Users\\euclid\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\polars\\dataframe\\frame.py&quot;</span>, line <span class=\"m\">13430</span>, in <span class=\"n\">__getattr__</span>\n<span class=\"w\">    </span><span class=\"k\">return</span> <span class=\"n\">getattr_fallback</span><span class=\"p\">(</span><span class=\"bp\">self</span><span class=\"p\">,</span> <span class=\"nb\">super</span><span class=\"p\">(),</span> <span class=\"n\">name</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;C:\\Users\\euclid\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\polars\\_utils\\expired.py&quot;</span>, line <span class=\"m\">87</span>, in <span class=\"n\">getattr_fallback</span>\n<span class=\"w\">    </span><span class=\"k\">raise</span> <span class=\"ne\">AttributeError</span><span class=\"p\">(</span><span class=\"n\">msg</span><span class=\"p\">,</span> <span class=\"n\">name</span><span class=\"o\">=</span><span class=\"n\">name</span><span class=\"p\">,</span> <span class=\"n\">obj</span><span class=\"o\">=</span><span class=\"n\">obj</span><span class=\"p\">)</span>\n<span class=\"gr\">AttributeError</span>: <span class=\"n\">&#39;DataFrame&#39; object has no attribute &#39;apply&#39;</span>\n</pre></div>\n</span>",
+          "mimetype": "application/vnd.marimo+traceback"
+        }
+      ]
+    },
+    {
+      "id": "emfo",
+      "code_hash": "a2d69876617a5cab44cc59d471f96090",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Temuan:</strong> atribut yang kosong tidak diberi placeholder, sehingga nilai sesudahnya <strong>bergeser ke kiri</strong> (mis. <code>LT : 438 m\u00b2</code> muncul di kolom <code>Kamar Tidur</code>).\nSolusi: baca isi sel berdasarkan <strong>tokennya</strong> (<code>LT</code>/<code>LB</code>/angka), bukan berdasarkan nama kolom.\nAngka biasa diurutkan sebagai Kamar Tidur \u2192 Kamar Mandi \u2192 Garasi.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "8edd02dfbbb2e49eaf5c1a09b1758cd5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"13-variasi-format-harga\">1.3 Variasi format <code>Harga</code></h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "42aa9bc6bc42b4a3b3db8bbf0eb6dfa4",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "46a5fef7dda863fc83c317b5de71d07b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Temuan:</strong> selain <code>Juta</code>/<code>Miliar</code>, ada satuan <code>Ribu</code>, <code>Triliun</code>, keterangan <code>Total</code>, harga per <code>/m\u00b2</code> dan <code>/ha</code>, serta <code>Hubungi Agen</code> (tanpa angka).\nHarga <code>Total</code> cukup di-strip, <code>/m\u00b2</code> dikalikan Luas Tanah, sisanya dibuang (tidak wajar / tidak ada harga).</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "65073545e3e5c6876b19c85dff84d642",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Validasi asumsi realign:</strong> pada baris yang hanya punya 2 angka, angka kedua dianggap <strong>Kamar Mandi</strong> (garasi yang kosong).\nBuktinya: korelasi dengan Luas Bangunan angka kedua itu mirip Kamar Mandi, bukan Garasi.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "227e58167a9fbc89d6d032797aed8a5d",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "d0bc9f30a3a9924d6006ba8091233c2e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"14-duplikat-dan-nilai-tidak-wajar\">1.4 Duplikat dan nilai tidak wajar</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "1b35803b8945bdb9b39b919cf3f1866d",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "7a68795b4fda638ecadbf4dec1ca1b84",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Temuan:</strong> satu listing yang sama bisa muncul di beberapa <code>Kecamatan</code>/<code>Page</code>, jadi duplikat harus dicari dari <strong>fitur listing</strong>, tanpa Page dan Kecamatan.\nNilai maksimum jauh melampaui persentil 99 (harga triliunan, luas ratusan juta m\u00b2, 284 kamar tidur) \u2192 kesalahan input, bukan rumah mewah yang valid.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "b79ac92ffdd376214c9a55d7fa471c3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"15-tabel-temuan-kualitas-data\">1.5 Tabel temuan kualitas data</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "92caeee72a3eb21c52843adc2f244747",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "600aa52076625d7e5fb48af1b0f7e244",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"16-visualisasi\">1.6 Visualisasi</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "e9fd510bec63be32623a150131ae98c2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Visualisasi memakai subset yang wajar (harga, luas, dan kamar masuk akal, tanpa duplikat) agar pola tidak tertutup outlier.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "709ae73b8a61ef67866fe75b623b31ee",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "a24ec19ddc1b79e164a1db56b1167341",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "78d52e0f254d61d29aeeead719b1de42",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "14e48710afdf44eb165dd9bff6fecc7c",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "30a0c00d2cb7f3423b7b17a7a4ec68b5",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "7bd67b94c5b00792010a10d98e83d7e5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"17-insight-utama\">1.7 Insight utama</h3>\n<span class=\"paragraph\"><strong>Insight 1 \u2013 Harga sangat miring ke kanan.</strong> Rata-rata (\u22482.673 Jt) jauh di atas median (1.500 Jt), skewness 5,7 dan turun menjadi 0,4 setelah di-log.\n\u2192 Keputusan: target dilatih dalam <code>log1p</code> (<code>TransformedTargetRegressor</code>), lalu dikembalikan ke Juta saat evaluasi; MAPE dipakai di samping MAE karena error absolut didominasi rumah mahal.</span>\n<span class=\"paragraph\"><strong>Insight 2 \u2013 Ukuran fisik adalah penentu harga utama, tetapi hubungannya tidak linear.</strong> Spearman terhadap harga: Luas Bangunan 0,88, Luas Tanah 0,83, Kamar Mandi 0,73, Kamar Tidur 0,67, Garasi hanya 0,18. Median harga naik dari \u00b1550 Jt (1 kamar tidur) menjadi \u00b16.500 Jt (8 kamar tidur), yaitu naik berlipat, bukan konstan.\n\u2192 Keputusan: tambah fitur turunan (<code>log_luas_*</code>, <code>total_kamar</code>, <code>rasio_lb_lt</code>) agar model linear menangkap skala; uji model berbasis pohon/ensemble yang menangkap non-linearitas; <code>Garasi</code> lemah dan sering kosong sehingga diisi 0 dan diuji lewat feature selection.</span>\n<span class=\"paragraph\"><strong>Insight 3 \u2013 Lokasi berpengaruh, tetapi sebagian besar selisihnya berasal dari ukuran rumah, dan datanya timpang.</strong> Median harga antar lokasi (\u2265300 listing) berkisar dari \u00b1450 Jt (Citayam) hingga \u00b14.200 Jt (Pangkalan Jati), selisih 9,3\u00d7. Setelah dinormalisasi per m\u00b2 bangunan selisihnya menyempit (\u00b18,7 sampai \u00b119,9 Jt/m\u00b2), dengan Pangkalan Jati, Margonda, dan Cinere sebagai area premium. Cinere memuat 21,4% data sedangkan 5 dari 38 label lokasi punya &lt; 50 baris, dan label bercampur level (kecamatan, kelurahan, kawasan).\n\u2192 Keputusan: one-hot <code>Kecamatan</code> dengan <code>min_frequency=50</code> (lokasi jarang digabung), flag <code>kecamatan_resmi</code>, dan model pohon untuk menangkap interaksi lokasi \u00d7 luas.</span>\n<span class=\"paragraph\"><strong>Insight 4 \u2013 Nilai ekstrem harus dibedakan dari salah input lewat konsistensi harga per m\u00b2, bukan besar harganya.</strong> Harga mentah mencapai miliaran Juta (satuan <code>Triliun</code>), sementara rumah mewah ratusan miliar masih mungkin valid. Median harga per m\u00b2 bangunan \u00b113 Jt, sehingga listing dengan harga/m\u00b2 di luar rentang wajar (3\u00d7IQR skala log) atau luas yang mustahil adalah salah input.\n\u2192 Keputusan: buang satuan <code>Ribu</code>/<code>Triliun</code>, batasi harga Rp100 jt\u2013Rp100 M, buang harga/m\u00b2 yang tidak konsisten, dan <strong>buang duplikat sebelum split</strong> (\u00b131% baris adalah duplikat) agar baris kembar tidak masuk train dan test sekaligus.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "a88bd93e2d3c9761c6526b674b4b7243",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"2-direct-modeling-kontrol-sebelum-preprocessing\">2. Direct Modeling (kontrol, sebelum preprocessing)</h2>\n<span class=\"paragraph\">Hanya konversi minimal agar teks menjadi angka: harga dikonversi dengan satuan Juta/Miliar, kolom lain diambil <strong>angka pertamanya apa adanya</strong>\n(tanpa realign, tanpa buang duplikat/outlier, kolom <code>Page</code> ikut). Missing diisi median, <code>Kecamatan</code> di-one-hot. Target tanpa transformasi.</span>\n<span class=\"paragraph\"><strong>Alasan pemilihan model:</strong></span>\n<ul>\n<li><strong>Linear Regression</strong>: baseline paling sederhana, melihat seberapa jauh hubungan linear bisa menjelaskan harga.</li>\n<li><strong>Ridge</strong>: fitur luas tanah/bangunan/kamar saling berkorelasi, regularisasi L2 menstabilkan koefisien.</li>\n<li><strong>Decision Tree</strong>: menangkap hubungan non-linear dan interaksi lokasi \u00d7 luas tanpa asumsi distribusi.</li>\n<li><strong>Random Forest</strong> (ensemble bagging): meredam variansi pohon tunggal dan cukup tahan terhadap outlier.</li>\n<li><strong>HistGradientBoosting</strong> (ensemble boosting): kuat untuk data tabular ~40 ribu baris, menangani missing value secara native.</li>\n<li><strong>XGBoost</strong> (ensemble boosting): boosting dengan regularisasi, umumnya yang terbaik untuk data tabular berskala menengah.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aqbW",
+      "code_hash": "3242a02c56ad9ec219f2350588e090fa",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "54b977645b28fd9cd70f2f1c634b8451",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TXez",
+      "code_hash": "0f74bc363508eb5d31c7d7d387035b28",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Hasil ini jadi <strong>kontrol</strong>. Catatan: test set tahap ini masih berisi outlier, sehingga angka R\u00b2/MAPE-nya tidak sepenuhnya sebanding dengan tahap berikutnya (test set bersih).</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dNNg",
+      "code_hash": "d87cd6d923165a2b34b503920ab35b52",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"3-modeling-dengan-preprocessing\">3. Modeling dengan Preprocessing</h2>\n<span class=\"paragraph\">Langkah pembersihan (urut):</span>\n<ol>\n<li>Parsing harga (satuan, <code>Total</code>, <code>/m\u00b2</code>), buang harga tanpa angka / satuan tidak wajar.</li>\n<li>Realign kolom berdasarkan token (<code>LT</code>/<code>LB</code>/angka).</li>\n<li>Buang listing non-hunian (tanpa Kamar Tidur / Luas Bangunan), <code>Garasi</code> kosong diisi 0.</li>\n<li>Buang duplikat berdasarkan fitur listing (abaikan Page &amp; Kecamatan).</li>\n<li>Buang outlier tidak wajar: batas domain + konsistensi harga per m\u00b2 bangunan (3\u00d7IQR skala log).</li>\n<li>Buang <code>Page</code>; tambah fitur baru; target di-log (<code>log1p</code>) saat training.</li>\n</ol></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yCnT",
+      "code_hash": "2392586cdfd3c76e9907ac7799ac8ef6",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wlCL",
+      "code_hash": "e014eaa60a47aebf014fc42c5d976d96",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "25f0926e738ed3cc44acdbaf74448005",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wAgl",
+      "code_hash": "afc7751493fcc30f917772aab73f3276",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"4-feature-selection\">4. Feature Selection</h2>\n<span class=\"paragraph\">Metode: <strong>korelasi Spearman</strong> (hubungan monotonik dengan target) dan <strong>Mutual Information</strong> (hubungan non-linear), dihitung pada data latih.\nFitur dipertahankan jika Mutual Information \u2265 0,02; sisanya (mis. kategori lokasi yang jarang) dibuang.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "rEll",
+      "code_hash": "2de6eb34fb921ff391252ae9a50e7779",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dGlV",
+      "code_hash": "8956b5a6f2c8cb7df2717702eaacb351",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SdmI",
+      "code_hash": "0eb7d2f0fa33ca8e2289125227a828c9",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lgWD",
+      "code_hash": "a2d31ad835c1f5810c21e8bffc911586",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"5-hyperparameter-tuning\">5. Hyperparameter Tuning</h2>\n<span class=\"paragraph\"><code>RandomizedSearchCV</code> (3-fold CV, metrik MAE) <strong>hanya pada data latih</strong> dengan fitur hasil seleksi. Linear Regression tidak punya hyperparameter utama sehingga tidak dituning.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yOPj",
+      "code_hash": "842efe23538bdb2a9e9227a7aeac2297",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "fwwy",
+      "code_hash": "f73123ed928f9ec385bc8bccb5c88c58",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"6-perbandingan-hasil-model-terbaik\">6. Perbandingan Hasil &amp; Model Terbaik</h2></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "LJZf",
+      "code_hash": "48d5cc989ac6232ea135c61097a7622f",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "name 'display' is not defined",
+          "traceback": null
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "--- MAE ---\n",
+          "mimetype": "text/plain"
+        },
+        {
+          "type": "stream",
+          "name": "stderr",
+          "text": "<span class=\"codehilite\"><div class=\"highlight\"><pre><span></span><span class=\"gt\">Traceback (most recent call last):</span>\n  File <span class=\"nb\">&quot;C:\\Users\\euclid\\AppData\\Local\\Temp\\marimo_15328\\__marimo__cell_LJZf_.py&quot;</span>, line <span class=\"m\">5</span>, in <span class=\"n\">&lt;module&gt;</span>\n<span class=\"w\">    </span><span class=\"n\">display</span><span class=\"p\">(</span><span class=\"n\">df_hasil</span><span class=\"o\">.</span><span class=\"n\">pivot</span><span class=\"p\">(</span><span class=\"n\">index</span><span class=\"o\">=</span><span class=\"s1\">&#39;Model&#39;</span><span class=\"p\">,</span> <span class=\"n\">columns</span><span class=\"o\">=</span><span class=\"s1\">&#39;Tahap&#39;</span><span class=\"p\">,</span> <span class=\"n\">values</span><span class=\"o\">=</span><span class=\"n\">_met</span><span class=\"p\">)[</span><span class=\"n\">tahap</span><span class=\"p\">]</span><span class=\"o\">.</span><span class=\"n\">round</span><span class=\"p\">(</span><span class=\"mi\">2</span><span class=\"p\">))</span>\n<span class=\"w\">    </span><span class=\"pm\">^^^^^^^</span>\n<span class=\"gr\">NameError</span>: <span class=\"n\">name &#39;display&#39; is not defined</span>\n</pre></div>\n</span>",
+          "mimetype": "application/vnd.marimo+traceback"
+        }
+      ]
+    },
+    {
+      "id": "urSm",
+      "code_hash": "7958c724400c99208fd428f3cc512d97",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (NameError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "jxvo",
+      "code_hash": "4542053afccaaf8a0467f62ff75d0e93",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Model terbaik dipilih dari hasil tuning pada <strong>test set bersih</strong> dengan rata-rata peringkat MAE, MAPE, dan R\u00b2.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "mWxS",
+      "code_hash": "85e29793900cf11ac3b059732e6e6766",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "CcZR",
+      "code_hash": "b4f63c21f8c2bcdb83960f04f7a7e64a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"7-simpan-model-untuk-streamlit\">7. Simpan Model (untuk Streamlit)</h2>\n<span class=\"paragraph\">Seluruh alur (fitur turunan \u2192 preprocessing \u2192 seleksi \u2192 model) dirakit menjadi satu <code>Pipeline</code> yang menerima 6 kolom bersih\n(<code>kamar_tidur, kamar_mandi, garasi, luas_tanah, luas_bangunan, kecamatan</code>). File <code>fitur.py</code> harus ikut di-repo karena dipakai saat load model.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "YWSi",
+      "code_hash": "184fcd898b3a0c8b870046d78c1b2d31",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (AttributeError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "zlud",
+      "code_hash": "a88011e182184ddfa6655fd7cad7efbc",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "tZnO",
+      "code_hash": "df9a2c331202ef31e3707b652e297898",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"kesimpulan\">Kesimpulan</h2>\n<ul>\n<li>Direct modeling pada data mentah hasilnya buruk karena kolom bergeser, harga/luas salah input, dan duplikat; preprocessing memperbaikinya secara jelas (lihat tabel \u00a76).</li>\n<li>Feature selection menyederhanakan fitur (42 \u2192 13) dengan penurunan akurasi kecil karena sebagian dummy lokasi ikut terbuang; tuning memberi perbaikan terutama pada Decision Tree dan XGBoost.</li>\n<li>Model terbaik dan metrik test set tercantum di \u00a76, dan disimpan sebagai <code>model_harga_rumah.joblib</code> untuk tahap Streamlit.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}
