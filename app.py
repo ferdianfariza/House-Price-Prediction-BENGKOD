@@ -4,7 +4,7 @@ from pathlib import Path
 import joblib
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
+import polars as pl
 import streamlit as st
 
 BASE = Path(__file__).parent
@@ -21,7 +21,7 @@ def muat_model():
 
 @st.cache_data
 def muat_data():
-    return pd.read_csv(BASE / "data_bersih.csv")
+    return pl.read_csv(BASE / "data_bersih.csv")
 
 
 @st.cache_data
@@ -42,7 +42,7 @@ def rupiah(juta):
 model, df, meta = muat_model(), muat_data(), muat_meta()
 rentang, M = meta["rentang"], meta["metrik_test"]
 
-st.title("Prediksi Harga Rumah Depok")
+st.title("🏠 Prediksi Harga Rumah Depok")
 st.caption(
     "Model regresi dari data listing rumah Depok dan sekitarnya (hasil scraping)."
 )
@@ -69,17 +69,15 @@ with tab_pred:
         kirim = st.form_submit_button("Prediksi harga", type="primary", width="stretch")
 
     if kirim:
-        x = pd.DataFrame(
-            [
-                {
-                    "kamar_tidur": kt,
-                    "kamar_mandi": km,
-                    "garasi": garasi,
-                    "luas_tanah": lt,
-                    "luas_bangunan": lb,
-                    "kecamatan": kecamatan,
-                }
-            ]
+        x = pl.DataFrame(
+            {
+                "kamar_tidur": [kt],
+                "kamar_mandi": [km],
+                "garasi": [garasi],
+                "luas_tanah": [lt],
+                "luas_bangunan": [lb],
+                "kecamatan": [kecamatan],
+            }
         )
         pred = float(model.predict(x)[0])
         mape = M["MAPE"] / 100
@@ -107,25 +105,25 @@ with tab_pred:
                     )
 
         with kanan:
-            sebaran = df[df.kecamatan == kecamatan]
-            sebaran = sebaran if len(sebaran) >= 50 else df
+            sebaran = df.filter(pl.col("kecamatan") == kecamatan)
+            sebaran = sebaran if sebaran.height >= 50 else df
             fig, ax = plt.subplots(figsize=(6.5, 4.2))
             ax.scatter(
-                df.luas_bangunan,
-                df.harga_juta,
+                df["luas_bangunan"].to_numpy(),
+                df["harga_juta"].to_numpy(),
                 s=4,
                 alpha=0.12,
                 color="gray",
                 label="Semua listing",
             )
             ax.scatter(
-                sebaran.luas_bangunan,
-                sebaran.harga_juta,
+                sebaran["luas_bangunan"].to_numpy(),
+                sebaran["harga_juta"].to_numpy(),
                 s=7,
                 alpha=0.4,
                 color="tab:blue",
                 label=f"Listing {kecamatan}"
-                if len(sebaran) < len(df)
+                if sebaran.height < df.height
                 else "Semua listing",
             )
             ax.scatter(
@@ -145,21 +143,25 @@ with tab_pred:
 # ---------- Tab 2: EDA ----------
 with tab_eda:
     st.write(
-        f"Data bersih yang dipakai model: **{len(df):,}** listing.".replace(",", ".")
+        f"Data bersih yang dipakai model: **{df.height:,}** listing.".replace(",", ".")
     )
     a, b = st.columns(2)
     with a:
         fig, ax = plt.subplots(figsize=(6, 3.8))
-        ax.hist(np.log10(df.harga_juta), bins=50, color="tab:blue")
+        ax.hist(np.log10(df["harga_juta"].to_numpy()), bins=50, color="tab:blue")
         ax.set_xlabel("log10(Harga, Juta Rp)")
         ax.set_ylabel("Jumlah listing")
         ax.set_title("Distribusi harga (skala log)")
         st.pyplot(fig)
     with b:
-        med = df.groupby("kecamatan").harga_juta.agg(["median", "size"])
-        med = med[med["size"] >= 100].sort_values("median")
+        med = (
+            df.group_by("kecamatan")
+            .agg(pl.col("harga_juta").median().alias("median"), pl.len().alias("n"))
+            .filter(pl.col("n") >= 100)
+            .sort("median")
+        )
         fig, ax = plt.subplots(figsize=(6, 3.8))
-        ax.barh(med.index, med["median"], color="tab:green")
+        ax.barh(med["kecamatan"].to_list(), med["median"].to_numpy(), color="tab:green")
         ax.set_xlabel("Median harga (Juta Rp)")
         ax.set_title("Median harga per lokasi (≥100 listing)")
         ax.tick_params(axis="y", labelsize=7)
@@ -167,7 +169,9 @@ with tab_eda:
     c, d = st.columns(2)
     with c:
         fig, ax = plt.subplots(figsize=(6, 3.8))
-        ax.scatter(df.luas_tanah, df.harga_juta, s=4, alpha=0.2)
+        ax.scatter(
+            df["luas_tanah"].to_numpy(), df["harga_juta"].to_numpy(), s=4, alpha=0.2
+        )
         ax.set_xscale("log")
         ax.set_yscale("log")
         ax.set_xlabel("Luas tanah (m²)")
@@ -175,9 +179,16 @@ with tab_eda:
         ax.set_title("Luas tanah vs harga")
         st.pyplot(fig)
     with d:
-        m_kt = df[df.kamar_tidur <= 8].groupby("kamar_tidur").harga_juta.median()
+        m_kt = (
+            df.filter(pl.col("kamar_tidur") <= 8)
+            .group_by("kamar_tidur")
+            .agg(pl.col("harga_juta").median())
+            .sort("kamar_tidur")
+        )
         fig, ax = plt.subplots(figsize=(6, 3.8))
-        ax.plot(m_kt.index, m_kt.values, marker="o")
+        ax.plot(
+            m_kt["kamar_tidur"].to_numpy(), m_kt["harga_juta"].to_numpy(), marker="o"
+        )
         ax.set_xlabel("Jumlah kamar tidur")
         ax.set_ylabel("Median harga (Juta Rp)")
         ax.set_title("Kamar tidur vs median harga")
@@ -197,26 +208,24 @@ with tab_model:
 
     st.markdown("**Penjelasan fitur input**")
     st.table(
-        pd.DataFrame(
-            {
-                "Fitur": [
-                    "Lokasi",
-                    "Kamar tidur",
-                    "Kamar mandi",
-                    "Garasi",
-                    "Luas tanah",
-                    "Luas bangunan",
-                ],
-                "Keterangan": [
-                    "Kecamatan / kawasan listing",
-                    "Jumlah kamar tidur",
-                    "Jumlah kamar mandi",
-                    "Jumlah garasi (0 jika tidak ada)",
-                    "Luas tanah (m²)",
-                    "Luas bangunan (m²)",
-                ],
-            }
-        )
+        {
+            "Fitur": [
+                "Lokasi",
+                "Kamar tidur",
+                "Kamar mandi",
+                "Garasi",
+                "Luas tanah",
+                "Luas bangunan",
+            ],
+            "Keterangan": [
+                "Kecamatan / kawasan listing",
+                "Jumlah kamar tidur",
+                "Jumlah kamar mandi",
+                "Jumlah garasi (0 jika tidak ada)",
+                "Luas tanah (m²)",
+                "Luas bangunan (m²)",
+            ],
+        }
     )
     st.markdown("""
 **Alur model:** fitur turunan (rasio luas, total kamar, log luas) → scaling & one-hot lokasi → seleksi fitur
