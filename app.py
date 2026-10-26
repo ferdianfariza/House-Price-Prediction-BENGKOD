@@ -4,7 +4,7 @@ from pathlib import Path
 import joblib
 import matplotlib.pyplot as plt
 import numpy as np
-import polars as pl
+import pandas as pd
 import streamlit as st
 
 BASE = Path(__file__).parent
@@ -21,12 +21,13 @@ def muat_model():
 
 @st.cache_data
 def muat_data():
-    return pl.read_csv(BASE / "data_bersih.csv")
+    return pd.read_csv(BASE / "data_bersih.csv")
 
 
 @st.cache_data
 def muat_meta():
-    return json.load(open(BASE / "meta_model.json"))
+    with open(BASE / "meta_model.json") as f:
+        return json.load(f)
 
 
 def rupiah(juta):
@@ -69,7 +70,7 @@ with tab_pred:
         kirim = st.form_submit_button("Prediksi harga", type="primary", width="stretch")
 
     if kirim:
-        x = pl.DataFrame(
+        x = pd.DataFrame(
             {
                 "kamar_tidur": [kt],
                 "kamar_mandi": [km],
@@ -105,8 +106,8 @@ with tab_pred:
                     )
 
         with kanan:
-            sebaran = df.filter(pl.col("kecamatan") == kecamatan)
-            sebaran = sebaran if sebaran.height >= 50 else df
+            sebaran = df[df["kecamatan"] == kecamatan]
+            sebaran = sebaran if len(sebaran) >= 50 else df
             fig, ax = plt.subplots(figsize=(6.5, 4.2))
             ax.scatter(
                 df["luas_bangunan"].to_numpy(),
@@ -123,7 +124,7 @@ with tab_pred:
                 alpha=0.4,
                 color="tab:blue",
                 label=f"Listing {kecamatan}"
-                if sebaran.height < df.height
+                if len(sebaran) < len(df)
                 else "Semua listing",
             )
             ax.scatter(
@@ -143,7 +144,7 @@ with tab_pred:
 # ---------- Tab 2: EDA ----------
 with tab_eda:
     st.write(
-        f"Data bersih yang dipakai model: **{df.height:,}** listing.".replace(",", ".")
+        f"Data bersih yang dipakai model: **{len(df):,}** listing.".replace(",", ".")
     )
     a, b = st.columns(2)
     with a:
@@ -155,13 +156,14 @@ with tab_eda:
         st.pyplot(fig)
     with b:
         med = (
-            df.group_by("kecamatan")
-            .agg(pl.col("harga_juta").median().alias("median"), pl.len().alias("n"))
-            .filter(pl.col("n") >= 100)
-            .sort("median")
+            df.groupby("kecamatan")["harga_juta"]
+            .agg(median="median", n="size")
+            .reset_index()
+            .query("n >= 100")
+            .sort_values("median")
         )
         fig, ax = plt.subplots(figsize=(6, 3.8))
-        ax.barh(med["kecamatan"].to_list(), med["median"].to_numpy(), color="tab:green")
+        ax.barh(med["kecamatan"].tolist(), med["median"].to_numpy(), color="tab:green")
         ax.set_xlabel("Median harga (Juta Rp)")
         ax.set_title("Median harga per lokasi (≥100 listing)")
         ax.tick_params(axis="y", labelsize=7)
@@ -180,10 +182,10 @@ with tab_eda:
         st.pyplot(fig)
     with d:
         m_kt = (
-            df.filter(pl.col("kamar_tidur") <= 8)
-            .group_by("kamar_tidur")
-            .agg(pl.col("harga_juta").median())
-            .sort("kamar_tidur")
+            df[df["kamar_tidur"] <= 8]
+            .groupby("kamar_tidur", as_index=False)["harga_juta"]
+            .median()
+            .sort_values("kamar_tidur")
         )
         fig, ax = plt.subplots(figsize=(6, 3.8))
         ax.plot(
