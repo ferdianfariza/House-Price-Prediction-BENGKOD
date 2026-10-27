@@ -1,0 +1,19 @@
+{
+  "model": "RandomForest kecil (target log1p, n_estimators=200, min_samples_leaf>=3)",
+  "fitur": [
+    "kamar_tidur",
+    "kamar_mandi",
+    "luas_tanah",
+    "luas_bangunan",
+    "kecamatan"
+  ],
+  "target": "harga (Rupiah)",
+  "metrik_test": {
+    "RMSE": 1684234119.0423422,
+    "MAE": 559082210.2120817,
+    "R2": 0.8615479790476361,
+    "MAPE_%": 21.317280759757466
+  },
+  "ukuran_mb": 35.5,
+  "dibuat": "2026-10-27T17:00:23"
+}

@@ -16,7 +16,12 @@ st.set_page_config(
 # ---------- Load resource ----------
 @st.cache_resource
 def muat_model():
-    return joblib.load(BASE / "model_harga_rumah.joblib")
+    return joblib.load(BASE / "model" / "model_rf.joblib")
+
+
+@st.cache_resource
+def muat_kolom():
+    return joblib.load(BASE / "model" / "kolom.joblib")
 
 
 @st.cache_data
@@ -26,7 +31,7 @@ def muat_data():
 
 @st.cache_data
 def muat_meta():
-    with open(BASE / "meta_model.json") as f:
+    with open(BASE / "model" / "meta.json") as f:
         return json.load(f)
 
 
@@ -40,13 +45,18 @@ def rupiah(juta):
     return "Rp " + f"{juta:,.0f}".replace(",", ".") + " Juta"
 
 
-model, df, meta = muat_model(), muat_data(), muat_meta()
-rentang, M = meta["rentang"], meta["metrik_test"]
+model, kolom, df, meta = muat_model(), muat_kolom(), muat_data(), muat_meta()
+
+M = meta["metrik_test"]
+MAPE = M["MAPE_%"]
+KECAMATAN = sorted(
+    c.replace("kecamatan_", "", 1) for c in kolom if c.startswith("kecamatan_")
+)
+FITUR_NUM = ["kamar_tidur", "kamar_mandi", "luas_tanah", "luas_bangunan"]
+rentang = {c: (df[c].min(), df[c].max()) for c in FITUR_NUM}
 
 st.title("🏠 Prediksi Harga Rumah Depok")
-st.caption(
-    "Model regresi dari data listing rumah Depok dan sekitarnya (hasil scraping)."
-)
+st.caption("Model regresi dari data listing rumah Depok dan sekitarnya")
 
 tab_pred, tab_eda, tab_model = st.tabs(["Prediksi", "Eksplorasi Data", "Tentang Model"])
 
@@ -57,13 +67,12 @@ with tab_pred:
     with kiri, st.form("form_prediksi"):
         kecamatan = st.selectbox(
             "Lokasi (Kecamatan / Kawasan)",
-            meta["kecamatan"],
-            index=meta["kecamatan"].index("Cinere"),
+            KECAMATAN,
+            index=KECAMATAN.index("Cinere") if "Cinere" in KECAMATAN else 0,
         )
-        c1, c2, c3 = st.columns(3)
+        c1, c2 = st.columns(2)
         kt = c1.number_input("Kamar tidur", 1, 15, 3)
         km = c2.number_input("Kamar mandi", 1, 15, 2)
-        garasi = c3.number_input("Garasi", 0, 10, 1)
         c4, c5 = st.columns(2)
         lt = c4.number_input("Luas tanah (m²)", 10, 5000, 90)
         lb = c5.number_input("Luas bangunan (m²)", 10, 3000, 70)
@@ -74,19 +83,21 @@ with tab_pred:
             {
                 "kamar_tidur": [kt],
                 "kamar_mandi": [km],
-                "garasi": [garasi],
                 "luas_tanah": [lt],
                 "luas_bangunan": [lb],
                 "kecamatan": [kecamatan],
             }
         )
-        pred = float(model.predict(x)[0])
-        mape = M["MAPE"] / 100
+        x = pd.get_dummies(x, columns=["kecamatan"], dtype=float).reindex(
+            columns=kolom, fill_value=0
+        )
+        pred = float(model.predict(x)[0]) / 1e6  # model memprediksi Rupiah -> Juta
+        mape = MAPE / 100
 
         with kiri:
             st.metric("Estimasi harga penawaran", rupiah(pred))
             st.write(
-                f"Kisaran wajar (±MAPE {M['MAPE']:.0f}%): **{rupiah(pred * (1 - mape))}** s.d. **{rupiah(pred * (1 + mape))}**"
+                f"Kisaran wajar (±MAPE {MAPE:.0f}%): **{rupiah(pred * (1 - mape))}** s.d. **{rupiah(pred * (1 + mape))}**"
             )
             if lb > 6 * lt:
                 st.warning(
@@ -95,14 +106,13 @@ with tab_pred:
             for nama, v in [
                 ("kamar_tidur", kt),
                 ("kamar_mandi", km),
-                ("garasi", garasi),
                 ("luas_tanah", lt),
                 ("luas_bangunan", lb),
             ]:
                 lo, hi = rentang[nama]
                 if not lo <= v <= hi:
                     st.info(
-                        f"{nama.replace('_', ' ').title()} di luar rentang umum data latih ({lo:.0f}–{hi:.0f})."
+                        f"{nama.replace('_', ' ').title()} di luar rentang data latih ({lo:.0f}–{hi:.0f})."
                     )
 
         with kanan:
@@ -202,10 +212,10 @@ with tab_eda:
 with tab_model:
     st.subheader(f"Model: {meta['model']}")
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("MAE", rupiah(M["MAE"]))
-    m2.metric("MAPE", f"{M['MAPE']:.1f}%")
-    m3.metric("R²", f"{M['R2']:.2f}")
-    m4.metric("RMSE", rupiah(M["RMSE"]))
+    m1.metric("MAE", rupiah(M["MAE"] / 1e6))
+    m2.metric("MAPE", f"{MAPE:.1f}%")
+    m3.metric("R²", f"{M['R2']:.1f}")
+    m4.metric("RMSE", rupiah(M["RMSE"] / 1e6))
     st.caption("Metrik dihitung pada test set bersih (20% data).")
 
     st.markdown("**Penjelasan fitur input**")
@@ -215,23 +225,20 @@ with tab_model:
                 "Lokasi",
                 "Kamar tidur",
                 "Kamar mandi",
-                "Garasi",
                 "Luas tanah",
                 "Luas bangunan",
             ],
             "Keterangan": [
                 "Kecamatan / kawasan listing",
-                "Jumlah kamar tidur",
-                "Jumlah kamar mandi",
-                "Jumlah garasi (0 jika tidak ada)",
+                "Jumlah kamar tidur (maks. 5 pada data latih)",
+                "Jumlah kamar mandi (maks. 5 pada data latih)",
                 "Luas tanah (m²)",
                 "Luas bangunan (m²)",
             ],
         }
     )
     st.markdown("""
-**Alur model:** fitur turunan (rasio luas, total kamar, log luas) → scaling & one-hot lokasi → seleksi fitur
-(Mutual Information) → Random Forest dengan target `log1p(harga)`.
+**Alur model:** one-hot lokasi → Random Forest dengan target `log1p(harga)`.
 
 **Catatan:** harga adalah *harga penawaran* dari listing, bukan harga transaksi, dan hanya mencakup rumah hunian
 di Depok dan sekitarnya. Gunakan hasil sebagai patokan awal, bukan penilaian resmi.
